@@ -1,0 +1,311 @@
+#mainRow {
+  display: flex;
+  flex-direction: column; /* 중앙 정렬 */
+  align-items: flex-start;   /* 위쪽 정렬, 필요시 center로 */
+  width: fit-content;
+  margin: 0 auto;
+  gap: 40px;            /* 두 박스 사이 간격 */
+}
+
+#container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 1098px !important;
+  min-width: 1098px !important;
+  max-width: 1098px !important;
+  margin: 0 auto;
+} 
+
+#liveBlock {
+  z-index: 100;
+  margin-top: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+}
+
+.tenMinuteBlock {
+  position: relative;
+  height: 550px;  /* liveBlock과 동일하게 */
+  margin-bottom: -90px;
+  width: 1098px !important;
+  max-width: 1098px !important;
+  min-width: 1098px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  box-sizing: border-box !important;
+}
+
+.snapshotInfoBox {
+  font-family: 'Courier New';
+  font-size: 7pt;
+  width: 80px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.hourBlock {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.snapshotImage {
+  position: static !important;
+  display: block !important;
+  width: 1098px !important;
+  height: 100% !important;
+  top: auto !important;
+  left: auto !important;
+  margin: 0px !important;
+  image-rendering: auto;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  display: block;
+  box-sizing: border-box !important;
+}
+
+.img  {
+  display: block;
+  width: 1098px;
+  height: 550px;
+  z-index: 0;
+  position: static;
+}
+.snapshotInfoBox {
+  /* 기존 infobox 스타일 복사 + 필요시 조정 */
+  width: 102px !important;
+  min-width: 102px !important;
+  max-width: 102px !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  margin: 0 !important;
+  position: static !important;
+  z-index: 1 !important;
+  padding: 0 !important;
+  border: none !important;
+  margin: 0 !important;
+  align-items: center;
+}
+
+
+#snapshotContainer1hr {
+  align-items: center;   /* 중앙 정렬 */
+  /* position: relative; */
+  /* margin-top: 1200px; */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  width: 1098px !important;
+  min-width: 1098px !important;
+  max-width: 1098px !important;
+}
+
+
+.canvasGroup {
+  /* position: absolute; */
+  /* width: 800px; */
+  width: 1098px; 
+  height: 400px;
+  /* outline: 1px dashed #aaa; 디버깅용 */
+  overflow: hidden;
+}
+
+/* .canvasGroup canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* width: 100%;
+  height: 100%; */
+/* }  */
+
+/* .block {
+  position: absolute;
+  left: 0;
+  width: 800px;
+  height: 1200px;
+  outline: 1px solid red; /* 디버깅용 */
+  /* background-color: rgba(255, 255, 255, 0.1);
+} */ */
+
+
+#archive {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start; 
+  gap: 10px;
+}
+
+/* .info-box {
+  font-family: 'Courier New', monospace;
+  white-space: pre-line; 
+   line-height: 1.4;
+  font-size: 13px;
+} */
+
+#infoBox {
+  width: 102px !important;
+  min-width: 102px !important;
+  max-width: 102px !important;
+  height: 300px;/* liveBlock과 동일하게 */
+  font-family: 'Courier New', monospace;
+  font-size: 7pt;
+  color: #333;
+  /* 텍스트 세로 회전 */
+  writing-mode: vertical-rl;
+  transform: rotate(180deg); /* 90도 회전 + vertical-rl은 180도 돌려야 오른쪽에서 아래로 읽힘 */
+  white-space: pre-line;
+  text-align: right;
+  overflow: hidden;
+  padding: 0;
+  padding: 0 !important;
+  border: none !important;
+  margin: 0 !important;
+  align-items: center;
+}
+
+#container, #liveBlock {
+  position: relative;
+}
+
+
+.snapshotCaption {
+  font-family: monospace;
+  font-size: 12px;
+  color: #333;
+  padding: 6px;
+  border-top: 1px solid #ccc;
+}
+
+
+.layer1 {
+   mix-blend-mode: multiply;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+}
+
+.layer2 {
+  mix-blend-mode: multiply;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+}
+
+.layer3 {
+  mix-blend-mode: multiply;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+}
+
+.layer4 {
+  mix-blend-mode: multiply;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+}
+
+.layer5 {
+  mix-blend-mode: multiply;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+}
+
+.layer6 {
+  mix-blend-mode: multiply;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+}
+
+/* print */
+/* @media print{
+  @page {
+    size: 210mm 420mm;
+    margin: 10mm;
+  }
+  #container{
+    display: none;
+  }
+
+  #snapshotContainer1hr{
+    break-inside: avoid;
+  }
+
+  .tenMinuteBlock {
+    display: block !important;
+    page-break-inside: avoid;
+  }
+  .snapshotInfoBox, .snapshotImage, .snapshotCaption {
+    display: block !important;
+    color: #333 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+
+} */
+
+@media print {
+  @page {
+    size: 210mm 480mm;
+    margin: 10mm;
+  }
+  #container{
+    display: none;
+  }
+
+  #snapshotContainer1hr{
+    display: none;
+  }
+  .snapshotInfoBox {
+    width: 102px !important;
+    display: block !important;
+    margin-right: 0px !important;
+    color: #333 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+
+  .tenMinuteBlock {
+    margin-bottom: -90px !important;
+  }
+
+  .parent {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .snapshotImage {
+
+    height: auto;
+    display: block !important;
+    object-fit: contain !important;
+    /* margin-bottom: -130px !important; */
+    color: #333 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+  .hourBlock {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+  }
+}
