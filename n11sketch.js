@@ -1344,16 +1344,6 @@ function layer6Pattern(pg) {
     }
 }
 
-/**
- * liveBlock을 더블클릭하면 이미지로 캡처해서 kiosk-printing 환경에서 바로 프린트
- * (프린트 다이얼로그 없이 즉시 인쇄됨)
- * 
- * 사용법: html2canvas 라이브러리 포함 필요
- * <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
- * 
- * 이 코드를 n11sketch.js에 추가하세요.
- */
-
 document.addEventListener("DOMContentLoaded", function() {
     const liveBlock = document.getElementById("liveBlock");
     if (!liveBlock) return;
@@ -1365,10 +1355,10 @@ document.addEventListener("DOMContentLoaded", function() {
       }).then(function(canvas) {
         const imgData = canvas.toDataURL("image/png");
   
-        // 화면에 보이지 않는 iframe 생성
+        // 프린트용 iframe 생성
         const printFrame = document.createElement('iframe');
         printFrame.style.position = 'fixed';
-        printFrame.style.right = '100vw'; // 화면 밖에 숨김
+        printFrame.style.right = '100vw';
         printFrame.style.width = '1px';
         printFrame.style.height = '1px';
         printFrame.style.border = '0';
@@ -1394,7 +1384,6 @@ document.addEventListener("DOMContentLoaded", function() {
           doc.close();
         };
   
-        // 프린트가 끝나면 iframe 삭제 (onafterprint는 kiosk-printing에서 바로 실행됨)
         printFrame.contentWindow.onafterprint = function() {
           document.body.removeChild(printFrame);
         };
