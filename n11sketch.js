@@ -562,7 +562,7 @@ function moveToArchive(snapshotsContainer) {
         
         
         const printWidthCm = 150; // 원하는 인쇄 폭(cm)
-        const dpi = 720; // 인쇄 해상도
+        const dpi = 1440; // 인쇄 해상도
         const targetWidthPx = (printWidthCm / 2.54) * dpi; // 17,718px
         const hourBlockWidthPx = hourBlock.offsetWidth;
         const scale = targetWidthPx / hourBlockWidthPx;
