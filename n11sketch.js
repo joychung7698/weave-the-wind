@@ -561,7 +561,7 @@ function moveToArchive(snapshotsContainer) {
     if (window.html2canvas) {
         
         
-        const printWidthCm = 120; // 원하는 인쇄 폭(cm)
+        const printWidthCm = 150; // 원하는 인쇄 폭(cm)
         const dpi = 300; // 인쇄 해상도
         const targetWidthPx = (printWidthCm / 2.54) * dpi; // 17,718px
         const hourBlockWidthPx = hourBlock.offsetWidth;
