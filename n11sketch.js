@@ -1,6 +1,10 @@
 
 let apiKey = "";
 
+const PRINT_WIDTH = 17716;
+const PRINT_HEIGHT = 8858;
+const BASE_HEIGHT = 550; // 원본 전체 디자인 높이(px)
+
 // hello this is a test to see if git works
 
 
@@ -70,14 +74,14 @@ let twist = 50;
 let sunProgressColorMap;
 window.layerColors = {}; // {1: "#xxxxxx", 2: "#xxxxxx", ...}
 
-let liveBlockTargetHeight = 550; // 최종 목표 높이(px)
+let liveBlockTargetHeight = PRINT_HEIGHT; // 최종 목표 높이(px)
 let liveBlockCurrentHeight = 0;  // 현재 높이(px)
 // let liveBlockGrowSpeed = 0.0111;    // 1프레임당 증가량 (조절 가능)
 let liveBlockGrowSpeed = 0.1;
 
 // 예시: 6개 레이어 각각
 let layerHeights = [0, 0, 0, 0, 0, 0];         // 현재 높이
-let layerTargetHeights = [445, 550, 410, 400, 386, 360]; // 목표 높이 (각 레이어별)
+let layerTargetHeights = [445, PRINT_HEIGHT, 410, 400, 386, 360]; // 목표 높이 (각 레이어별)
 let layerGrowSpeeds = [0.03, 0.05, 0.015, 0.02, 0.015, 0.025]; // 각 레이어별 속도
 
 let first_time_fetch_weather_received = false;
@@ -279,7 +283,7 @@ function createBlock() {
     liveBlock.innerHTML = '';
     
     
-    let containerWidth = 1100; // 최대 너비 1200px 제한
+    let containerWidth = PRINT_WIDTH; // 최대 너비 1200px 제한
     let container = createDiv();
     container.class("canvasGroup");
     container.style("position", "relative");
@@ -288,12 +292,19 @@ function createBlock() {
     container.style.height = liveBlockCurrentHeight + "px"; 
     container.parent("liveBlock");
     
-    window.layer1 = createGraphics(containerWidth, 445);
-    window.layer2 = createGraphics(containerWidth, 550);
-    window.layer3 = createGraphics(containerWidth, 410);
-    window.layer4 = createGraphics(containerWidth, 400);
-    window.layer5 = createGraphics(containerWidth, 386);
-    window.layer6 = createGraphics(containerWidth, 360);
+    const layer1Height = Math.round(PRINT_HEIGHT * (445 / BASE_HEIGHT));
+    const layer2Height = PRINT_HEIGHT; // 항상 전체
+    const layer3Height = Math.round(PRINT_HEIGHT * (410 / BASE_HEIGHT));
+    const layer4Height = Math.round(PRINT_HEIGHT * (400 / BASE_HEIGHT));
+    const layer5Height = Math.round(PRINT_HEIGHT * (386 / BASE_HEIGHT));
+    const layer6Height = Math.round(PRINT_HEIGHT * (360 / BASE_HEIGHT));
+
+    window.layer1 = createGraphics(containerWidth, layer1Height);
+    window.layer2 = createGraphics(containerWidth, layer2Height);
+    window.layer3 = createGraphics(containerWidth, layer3Height);
+    window.layer4 = createGraphics(containerWidth, layer4Height);
+    window.layer5 = createGraphics(containerWidth, layer5Height);
+    window.layer6 = createGraphics(containerWidth, layer6Height);
    
     //layer1
     // window[`layer1_${currentBlockIndex}`] = createGraphics(800, 200);
@@ -441,7 +452,7 @@ function update10minutes() {
     drawGraphicsToBlock(weatherData);
     
     // 1. flattenCanvas 생성 (liveBlock과 같은 크기)
-    let flattenCanvas = createGraphics(1100, 550);
+    let flattenCanvas = createGraphics(PRINT_WIDTH, PRINT_HEIGHT);
     flattenCanvas.clear();
     // debugFlattenCanvasBlendModes(flattenCanvas);
     
@@ -470,16 +481,16 @@ function update10minutes() {
     const img = document.createElement("img");
     img.src = flattenCanvas.canvas.toDataURL("image/png");
     img.classList.add("snapshotImage");
-    img.style.width = "1100px";
-    img.style.height = "550px";
+    img.style.width = PRINT_WIDTH + "px";
+    img.style.height = PRINT_HEIGHT + "px";
     img.style.display = "block";
     
     
     // 3. tenMinuteBlock에 추가
     const tenMinuteBlock = document.createElement("div");
     tenMinuteBlock.classList.add("tenMinuteBlock");
-    tenMinuteBlock.style.width = "1100px";
-    tenMinuteBlock.style.height = "550px"; 
+    tenMinuteBlock.style.width = "PRINT_WIDTHpx";
+    tenMinuteBlock.style.height = "PRINT_HEIGHTpx"; 
     tenMinuteBlock.style.display = "flex";
     tenMinuteBlock.style.flexDirection = "row";
     tenMinuteBlock.style.alignItems = "flex-start";
@@ -488,8 +499,8 @@ function update10minutes() {
     
     // 이미지 snapshotImage
     img.style.display = "block";
-    img.style.width = "1100px";
-    img.style.height = "550px";
+    img.style.width = PRINT_WIDTH + "px";
+    img.style.height = PRINT_HEIGHT + "px";
     img.style.position = "static";
     img.style.zIndex = "0";
     img.style.boxSizing = "border-box";
@@ -589,7 +600,7 @@ function moveToArchive(snapshotsContainer) {
             infoBox.style.transform = originalTransform;
             infoBox.style.writingMode = originalWritingMode;
             infoBox.style.whiteSpace = 'nowrap'; // 원래 상태로 복원
-            infoBox.style.height = '550px'; // 원래 높이 복원
+            infoBox.style.height = 'PRINT_HEIGHTpx'; // 원래 높이 복원
             
             // 캡처된 이미지를 회전
             const rotatedCanvas = document.createElement('canvas');
@@ -846,7 +857,7 @@ function initializeWindBars() {
     let rows = 26;
     
     const cellW = layer.width / cols;
-    const cellH = 1100 / rows;
+    const cellH = PRINT_HEIGHT / rows;
     
     // console.log("cellW:", cellW, "cellH:", cellH);
     
@@ -881,8 +892,8 @@ function initializeWindBars() {
 }
 
 function initializeGrid1() {
-    let colWidth = 800 / cols;
-    let rowHeight = 1100 / rows;
+    let colWidth = PRINT_WIDTH  / cols;
+    let rowHeight = PRINT_HEIGHT / rows;
     
     for (let i = 0; i < cols; i++) {
         colSizes1[i] = colWidth;
@@ -895,8 +906,8 @@ function initializeGrid1() {
 }
 
 function initializeGrid2() {
-    let colW = 800 / cols;
-    let rowH = 1100 / rows;
+    let colW = PRINT_WIDTH  / cols;
+    let rowH = PRINT_HEIGHT/ rows;
     for (let i = 0; i < cols; i++) {
         colSizes2[i] = colW;
         colOffsets2[i] = random(TWO_PI);
@@ -1303,7 +1314,7 @@ function layer6Pattern(pg) {
     pg.clear(); 
     
     // console.log("🔹 layer6Pattern called");
-    rectWidth = constrain(variance * 100, 20, 550);
+    rectWidth = constrain(variance * 100, 20, PRINT_HEIGHT);
     rectOffset = rectWidth * 0.9;  
     
     let mainColor = window.layerColors[6] || "#cccccc";
