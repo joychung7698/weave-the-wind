@@ -51,6 +51,8 @@
 .hourBlock {
   position: relative;
   margin-bottom: 30px;
+  height: auto !important;
+  overflow: visible !important;
 }
 
 .snapshotImage {

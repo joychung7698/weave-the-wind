@@ -561,10 +561,12 @@ function moveToArchive(snapshotsContainer) {
     if (window.html2canvas) {
         
         
+        const printWidthCm = 120; // 원하는 인쇄 폭(cm)
+        const dpi = 300; // 인쇄 해상도
+        const targetWidthPx = (printWidthCm / 2.54) * dpi; // 17,718px
         const hourBlockWidthPx = hourBlock.offsetWidth;
-        const targetWidthPx = 280 / 2.54 * 300;
         const scale = targetWidthPx / hourBlockWidthPx;
-        
+
         // 캡처 전에 #infoBox 스타일 변경
         const infoBox = document.getElementById('infoBox');
         const originalTransform = infoBox.style.transform;
@@ -579,7 +581,7 @@ function moveToArchive(snapshotsContainer) {
             backgroundColor: null,
             // scale: 6.20125 //a2
             // scale: 4.385 //a3
-            scale: 3.1 //a4
+            scale: scale //a4
             
         }).then(canvas => {
             
