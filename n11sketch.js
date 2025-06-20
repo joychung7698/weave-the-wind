@@ -329,7 +329,7 @@ function createBlock() {
     canvasEl3.classList.add("layer-canvas", "layer3");
     canvasEl3.style.height = layerHeights[0] + "px"; // 초기값 0
     canvasEl3.style.display = "block"; 
-    canvasEl3.style.mixBlendMode = "screen";
+    canvasEl3.style.mixBlendMode = "multiply";
     canvasEl3.style.position = "absolute";
     canvasEl3.style.left = "0px";
     canvasEl3.style.top = "0px"; 
