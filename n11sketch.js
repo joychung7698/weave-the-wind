@@ -77,7 +77,7 @@ let liveBlockGrowSpeed = 0.1;
 
 // 예시: 6개 레이어 각각
 let layerHeights = [0, 0, 0, 0, 0, 0];         // 현재 높이
-let layerTargetHeights = [445, 550, 410, 425, 386, 360]; // 목표 높이 (각 레이어별)
+let layerTargetHeights = [445, 550, 410, 400, 386, 360]; // 목표 높이 (각 레이어별)
 let layerGrowSpeeds = [0.03, 0.05, 0.015, 0.02, 0.015, 0.025]; // 각 레이어별 속도
 
 let first_time_fetch_weather_received = false;
@@ -291,7 +291,7 @@ function createBlock() {
     window.layer1 = createGraphics(containerWidth, 445);
     window.layer2 = createGraphics(containerWidth, 550);
     window.layer3 = createGraphics(containerWidth, 410);
-    window.layer4 = createGraphics(containerWidth, 425);
+    window.layer4 = createGraphics(containerWidth, 400);
     window.layer5 = createGraphics(containerWidth, 386);
     window.layer6 = createGraphics(containerWidth, 360);
    
