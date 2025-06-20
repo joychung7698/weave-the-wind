@@ -542,7 +542,7 @@ function moveToArchive(snapshotsContainer) {
     const hourBlock = document.createElement('div');
     hourBlock.classList.add('hourBlock');
     hourBlock.style.display = 'flex';
-    hourBlock.style.flexDirection = 'column-reverse';
+    hourBlock.style.flexDirection = 'column';
     
     // 최신이 위에 오도록 역순으로 추가
     const tenMinuteBlocks = Array.from(snapshotsContainer.querySelectorAll('.tenMinuteBlock'));
