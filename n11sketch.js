@@ -648,10 +648,11 @@ function fetchWeather(lat, lon) {
             data.wind.deg !== undefined
         ) {
             
-            data.wind.speed = random(1, 10);
-            data.wind.deg = random(0, 360);
-            data.main.temp = random(10, 30);
-            data.main.humidity = random(10, 90); // 이 줄 추가!
+            // data.wind.speed = random(1, 10);
+            // data.wind.deg = random(0, 360);
+            // data.main.temp = random(10, 30);
+            // data.main.humidity = random(10, 90); // 이 줄 추가!
+            
             
             
             windSpeed = data.wind.speed;
