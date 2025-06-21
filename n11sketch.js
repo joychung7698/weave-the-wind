@@ -57,7 +57,7 @@ let finalColors;
 
 let densityBands = [];
 let lineCount = 60;
-let rectCount = 50;
+let rectCount = 100;
 let rectWidth = 0;
 let rectOffset = 0;
 let rectHeight;
@@ -1310,7 +1310,7 @@ function layer6Pattern(pg) {
     pg.clear(); 
     
     // console.log("🔹 layer6Pattern called");
-    rectWidth = constrain(variance * 100, 20, 550);
+    rectWidth = constrain(variance * 300, 20, 800);
     rectOffset = rectWidth * 0.9;  
     
     let mainColor = window.layerColors[6] || "#cccccc";
