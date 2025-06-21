@@ -652,7 +652,15 @@ function fetchWeather(lat, lon) {
             // data.wind.deg = random(0, 360);
             // data.main.temp = random(10, 30);
             // data.main.humidity = random(10, 90); // 이 줄 추가!
-            
+
+              if (realSpeeds.length < 10) {
+            // 초기 10개 데이터는 임의 값으로 채움 (variance 계산용)
+            realSpeeds.push(random(1, 10)); // 🌪️ 초기 seed 데이터
+          } else {
+            // 10개 이후부터는 실제 API 데이터 사용
+            realSpeeds.push(data.wind.speed); // ✅ 실제 풍속
+            if (realSpeeds.length > 10) realSpeeds.shift(); // 큐 유지
+          }
             
             
             windSpeed = data.wind.speed;
