@@ -2,7 +2,7 @@
 let apiKey = "";
 
 // hello this is a test to see if git works
-
+//update test
 
 const liveBlock = document.getElementById('liveBlock');  // 실시간 시각화가 이뤄지는 단 하나의 block
 const currentCanvases = liveBlock.querySelectorAll('canvas');  // block 안의 6개 canvas들 (layer1Lines1 ~ layer1Lines6)
