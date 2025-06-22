@@ -7,13 +7,19 @@
   gap: 40px;            /* 두 박스 사이 간격 */
 }
 
+#printArea {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* 원하는 만큼 gap 조절 (예: 16px, 24px, 32px 등) */
+}
+
 #container {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  width: 1098px !important;
-  min-width: 1098px !important;
-  max-width: 1098px !important;
+  width: 1100px !important;
+  min-width: 1100px !important;
+  max-width: 1100px !important;
   margin: 0 auto;
 } 
 
@@ -31,9 +37,9 @@
   position: relative;
   height: 550px;  /* liveBlock과 동일하게 */
   margin-bottom: -90px;
-  width: 1098px !important;
-  max-width: 1098px !important;
-  min-width: 1098px !important;
+  width: 1100px !important;
+  max-width: 1100px !important;
+  min-width: 1100px !important;
   display: flex !important;
   flex-direction: row !important;
   align-items: flex-start !important;
@@ -56,7 +62,7 @@
 .snapshotImage {
   position: static !important;
   display: block !important;
-  width: 1098px !important;
+  width: 1100px !important;
   height: 100% !important;
   top: auto !important;
   left: auto !important;
@@ -70,16 +76,16 @@
 
 .img  {
   display: block;
-  width: 1098px;
+  width: 1100px;
   height: 550px;
   z-index: 0;
   position: static;
 }
 .snapshotInfoBox {
   /* 기존 infobox 스타일 복사 + 필요시 조정 */
-  width: 102px !important;
-  min-width: 102px !important;
-  max-width: 102px !important;
+  width: 100px !important;
+  min-width: 100px !important;
+  max-width: 100px !important;
   height: 100% !important;
   box-sizing: border-box !important;
   display: block !important;
@@ -101,16 +107,16 @@
   display: flex;
   flex-direction: column;
   gap: 0px;
-  width: 1098px !important;
-  min-width: 1098px !important;
-  max-width: 1098px !important;
+  width: 1100px !important;
+  min-width: 1100px !important;
+  max-width: 1100px !important;
 }
 
 
 .canvasGroup {
   /* position: absolute; */
   /* width: 800px; */
-  width: 1098px; 
+  width: 1100px; 
   height: 400px;
   /* outline: 1px dashed #aaa; 디버깅용 */
   overflow: hidden;
@@ -150,9 +156,9 @@
 } */
 
 #infoBox {
-  width: 102px !important;
-  min-width: 102px !important;
-  max-width: 102px !important;
+  width: 100px !important;
+  min-width: 100px !important;
+  max-width: 100px !important;
   height: 300px;/* liveBlock과 동일하게 */
   font-family: 'Courier New', monospace;
   font-size: 7pt;
@@ -272,7 +278,7 @@
     display: none;
   }
   .snapshotInfoBox {
-    width: 102px !important;
+    width: 100px !important;
     display: block !important;
     margin-right: 0px !important;
     color: #333 !important;

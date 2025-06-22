@@ -34,6 +34,7 @@ let rotateForward = true;
 
 let sunprogress = 0;
 let variance = 0;
+let twistPhaseOffset = 0;
 let previousSpeeds = [];
 let realSpeeds = [];
 let lastWindSpeed = null;
@@ -57,7 +58,7 @@ let finalColors;
 
 let densityBands = [];
 let lineCount = 60;
-let rectCount = 100;
+let rectCount = 150;
 let rectWidth = 0;
 let rectOffset = 0;
 let rectHeight;
@@ -88,6 +89,16 @@ function preload() {
     sunProgressColorMap = loadJSON("sunProgressColorMap.json");
 }
 
+function calculateLayerGrowSpeeds() {
+    const GROW_DURATION_SECONDS = 600; // 10분
+    const FPS = 60; // p5.js 기본
+    const GROW_TOTAL_FRAMES = GROW_DURATION_SECONDS * FPS;
+
+    for (let i = 0; i < layerTargetHeights.length; i++) {
+        layerGrowSpeeds[i] = layerTargetHeights[i] / GROW_TOTAL_FRAMES;
+    }
+    liveBlockGrowSpeed = layerTargetHeights[1] / GROW_TOTAL_FRAMES;
+}
 
 function setup() {
     
@@ -96,11 +107,10 @@ function setup() {
     initializeGrid1();
     initializeGrid2();
     createBlock(); // block 생성
-
-
     // drawPatternLines(window.layer6, 1100, 200, 0);
-
     initializeWindBars();
+
+    calculateLayerGrowSpeeds(); // ★ 이 줄 추가
     
     
     
@@ -174,6 +184,13 @@ function draw() {
         liveBlockDiv.style.height = layerHeights[1] + "px";
     }
 
+    const infoBox = document.getElementById('infoBox');
+    if (infoBox) {
+        infoBox.style.height = layerHeights[1] + "px";
+        // 필요하다면 트랜지션 효과도 추가 가능:
+        // infoBox.style.transition = "height 0.3s";
+    }
+
     //createGraphics들 속도
     for (let i = 0; i < 6; i++) {
         if (layerHeights[i] < layerTargetHeights[i]) {
@@ -193,11 +210,20 @@ function draw() {
 
 
 
-function pickColorGroupBySunHumidity(sunprogress, humidity, colorGroups, a = 0.6, b = 0.4) {
+function pickColorGroupBySunHumidity(sunprogress, humidity, colorGroups, a = 0.65, b = 0.35, splitCount = 12) {
     let score = sunprogress * a + humidity * b;
     score = Math.max(0, Math.min(1, score));
     let idx = Math.floor(score * (colorGroups.length - 1));
     return colorGroups[idx];
+}
+
+function shuffleArray(arr) {
+    let a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
 }
 
 function getHumidityGroup(humidity) {
@@ -502,7 +528,7 @@ function update10minutes() {
         const infoBoxClone = infoBox.cloneNode(true); // true: 자식까지 복제
         infoBoxClone.classList.add("snapshotInfoBox");
         // 스타일 조정 (필요시)
-        infoBoxClone.style.width = "102px";
+        infoBoxClone.style.width = "100px";
         infoBoxClone.style.height = "300px";
         infoBoxClone.style.margin = "0";
         infoBoxClone.style.fontSize = "8pt";
@@ -698,8 +724,9 @@ function fetchWeather(lat, lon) {
                 sunprogress,
                 humidityNorm,
                 sunProgressColorMap.sunProgressSets,
-                0.6, // sunprogress 가중치
-                0.4  // humidity 가중치
+                0.65, // sunprogress 가중치
+                0.35,
+                12  // humidity 가중치
             );
             
             // 4. 습도 그룹 및 강조컬러 선정
@@ -731,9 +758,11 @@ function fetchWeather(lat, lon) {
                     previousSpeeds = [...realSpeeds];
                     variance = calculateVariance(previousSpeeds);
                 }
+
+                twistPhaseOffset = random(-Math.PI, Math.PI);
+                }
                 
                 // console.log("draw all graphics done");
-            }
             
             
             // console.log("windBars count:", windBars.length);
@@ -1306,13 +1335,25 @@ function getColor(idx) {
 }
 function layer6Pattern(pg) {
     // // console.log("📍 layer6Pattern called on frame: " + frameCount);
-    
+    console.log("variance:", variance);
+
     pg.clear(); 
     
-    // console.log("🔹 layer6Pattern called");
-    rectWidth = constrain(variance * 300, 20, 800);
-    rectOffset = rectWidth * 0.9;  
-    
+        // 매핑 파라미터
+        const minVariance = 0.0;
+        const maxVariance = 5.0; // 실제로는 0~0.5가 많지만, 극단값 대비
+        const minRectWidth = 40;
+        const maxRectWidth = 400;
+        const minTwist = 40;
+        const maxTwist = 150;
+
+        let t = map(variance, minVariance, maxVariance, 0, 1);
+        t = constrain(t, 0, 1);
+
+        rectWidth = lerp(maxRectWidth, minRectWidth, t); // variance 작을수록 rectWidth 큼
+        rectOffset = rectWidth * 0.9;  
+        twist = lerp(minTwist, maxTwist, t); // variance 클수록 twist 큼
+
     let mainColor = window.layerColors[6] || "#cccccc";
     let palette = window.chosenColorGroup || [];
     let subColor = palette.find(c => c !== mainColor) || "#cccccc";
@@ -1328,7 +1369,7 @@ function layer6Pattern(pg) {
     
     for (let i = 0; i < rectCount; i++) {
         let cx = pg.width / 2 - ((rectCount - 1) * rectOffset) / 2 + i * rectOffset;
-        let cy = pg.height / 2 + sin(i * 0.5) * twist;
+        let cy = pg.height / 2 + sin(i * 0.5 + twistPhaseOffset) * twist; // ★ 위상 적용!
         
         // pg.push();
         // pg.blendMode(BLEND);
@@ -1356,17 +1397,18 @@ function layer6Pattern(pg) {
 
 document.addEventListener("DOMContentLoaded", function() {
    
-    const liveBlock = document.getElementById("liveBlock");
-    if (!liveBlock) return;
+    const printArea = document.getElementById("printArea");
+    const snapshotsContainer = document.getElementById("printArea");
+    if (!printArea) return;
   
-    liveBlock.addEventListener("dblclick", function() {
-        console.log("double works");
-      html2canvas(liveBlock, {
-        backgroundColor: null,
-        useCORS: true
-      }).then(function(canvas) {
-        const imgData = canvas.toDataURL("image/png");
-  
+    mainRow.addEventListener("dblclick", function() {   
+    // 4. html2canvas로 tempDiv 캡처
+        html2canvas(mainRow, {
+          backgroundColor: null,
+          useCORS: true
+        }).then(function(canvas) {
+            const imgData = canvas.toDataURL("image/png");
+    
         // 프린트용 iframe 생성
         const printFrame = document.createElement('iframe');
         printFrame.style.position = 'fixed';
@@ -1382,10 +1424,36 @@ document.addEventListener("DOMContentLoaded", function() {
           doc.write(`
             <html>
               <head>
-                <title>Print LiveBlock</title>
+                <title>Print Area</title>
                 <style>
-                  body { margin: 0; text-align: center; }
-                  img { max-width: 100vw; max-height: 100vh; }
+                @page {
+                    size: 89mm 127mm;
+                    margin: 0;
+                }
+                 html, body { 
+                    width: 89mm;
+                    height: 127mm;
+                    margin: 0; 
+                    padding: 0;
+                    overflow: hidden;
+
+                body {
+                    width: 89mm;
+                    height: 127mm;
+                    margin: 0;
+                    padding: 0;
+                    overflow: hidden;
+                    position: relative;
+                }
+                    img {
+                    width: 50mm;
+                    max-height: 121mm;
+                    height: auto;
+                    margin: 5mm 3.6mm 3mm 3mm; /* 상 우 하 좌 */
+                    display: block;
+                    object-position: left top;
+                    box-sizing: border-box;
+                }
                 </style>
               </head>
               <body>
@@ -1401,4 +1469,4 @@ document.addEventListener("DOMContentLoaded", function() {
         };
       });
     });
-  });
+});
