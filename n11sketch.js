@@ -156,23 +156,7 @@ function draw() {
     //   text("Graphics not ready yet...", width / 2, height / 2);
     //   return; // 그리기 중단
     // }
-    
-    
-    for (let i = 0; i < 6; i++) {
-        if (layerHeights[i] < layerTargetHeights[i]) {
-            layerHeights[i] += layerGrowSpeeds[i];
-            if (layerHeights[i] > layerTargetHeights[i]) {
-                layerHeights[i] = layerTargetHeights[i];
-            }
-            let canvasEl = document.getElementById(`layer${i+1}-canvas`);
-            if (canvasEl) {
-                canvasEl.style.height = layerHeights[i] + "px";
-            }
-        }
-    }
 
-    
-    
     // if (liveBlockCurrentHeight < liveBlockTargetHeight) {
     //   liveBlockCurrentHeight += liveBlockGrowSpeed;
     //   if (liveBlockCurrentHeight > liveBlockTargetHeight) {
@@ -206,12 +190,21 @@ function draw() {
         }
     }
     
+    
 }
 
 
 
-function pickColorGroupBySunHumidity(sunprogress, humidity, colorGroups, a = 0.65, b = 0.35, splitCount = 12) {
-    let score = sunprogress * a + humidity * b;
+function pickColorGroupBySunHumidity(
+    sunprogress, 
+    humidity, 
+    colorGroups, 
+    a = 0.50, 
+    b = 0.33, 
+    c = 0.17, 
+    splitCount = 12) {
+   let windNorm = Math.max(0, Math.min(1, (windSpeed - 0) / (20 - 0)));  
+  let score = sunprogress * a + humidity * b + windNorm * c;
     score = Math.max(0, Math.min(1, score));
     let idx = Math.floor(score * (colorGroups.length - 1));
     return colorGroups[idx];
@@ -282,6 +275,27 @@ function assignLayerColors(chosenColorGroup, humidityGroup, sunProgressColorMap)
         let idx4 = Math.floor(Math.random() * availableColors.length);
         layerColors[4] = availableColors[idx4];
         availableColors.splice(idx4, 1);
+    }
+  
+     // 남은 컬러 중 채도가 가장 높은 컬러 찾기 (p5.js color 사용)
+    let maxSat = -1;
+    let maxSatColor = null;
+    let maxSatIdx = -1;
+    for (let i = 0; i < availableColors.length; i++) {
+        let c = color(availableColors[i]);
+        let s = saturation(c);
+        if (s > maxSat) {
+            maxSat = s;
+            maxSatColor = availableColors[i];
+            maxSatIdx = i;
+        }
+    }
+
+    // 1번 또는 5번에 배정 (랜덤)
+    if (maxSatColor !== null) {
+        const assignToLayer = Math.random() < 0.5 ? 1 : 5;
+        layerColors[assignToLayer] = maxSatColor;
+        availableColors.splice(maxSatIdx, 1);
     }
     
     // 나머지 레이어(1,3,5,6): 남은 컬러 중 랜덤하게 하나씩 배정
@@ -724,9 +738,12 @@ function fetchWeather(lat, lon) {
                 sunprogress,
                 humidityNorm,
                 sunProgressColorMap.sunProgressSets,
-                0.65, // sunprogress 가중치
-                0.35,
-                12  // humidity 가중치
+                0.50, // sunprogress 가중치
+                0.30, // humidity 가중치
+                0.20, // windSpeed 가중치 (더 강하게 하고 싶으면 0.3~0.4)
+                12,   // splitCount
+                0,    // windMin
+                5     // windMax (실제 windSpeed 변화폭에 맞게)
             );
             
             // 4. 습도 그룹 및 강조컬러 선정
@@ -1217,8 +1234,8 @@ function layer4Grid1(pg) {
     // console.log("🔹 layer4Grid1 called");
     if (windSpeed === 0 || temperature === 0) return;
     
-    let ampByVariance = map(variance, 0, 5, 0, 120);
-    ampByVariance = max(ampByVariance, 5);
+    let ampByVariance = map(variance, 0, 5, 0, 200) * 1.5;
+    ampByVariance = max(ampByVariance, 10);
     fluctuateAndNormalize(colSizes1, pg.width, colOffsets1, ampByVariance, 0.01);
     fluctuateAndNormalize(rowSizes1, pg.height, rowOffsets1, ampByVariance, 0.01);
     
@@ -1283,8 +1300,8 @@ function layer5Grid2(pg) {
     // console.log("🔹 layer5Grid2 called");
     if (windSpeed === 0 || temperature === 0) return;
     
-    let ampByVariance = map(variance, 0, 5, 0, 120);
-    ampByVariance = max(ampByVariance, 5);
+    let ampByVariance = map(variance, 0, 5, 0, 200) * 1.5;
+    ampByVariance = max(ampByVariance, 10);
     fluctuateAndNormalize(colSizes2, pg.width, colOffsets2, ampByVariance, 0.01);
     fluctuateAndNormalize(rowSizes2, pg.height, rowOffsets2, ampByVariance, 0.01);
     
@@ -1395,6 +1412,91 @@ function layer6Pattern(pg) {
 }
 
 
+// document.addEventListener("DOMContentLoaded", function() {
+   
+    const printArea = document.getElementById("printArea");
+    const snapshotsContainer = document.getElementById("printArea");
+    if (!printArea) return;
+  
+    mainRow.addEventListener("dblclick", function() {   
+    // 4. html2canvas로 tempDiv 캡처
+        html2canvas(mainRow, {
+          backgroundColor: null,
+          useCORS: true
+        }).then(function(canvas) {
+            const imgData = canvas.toDataURL("image/png");
+    
+        // 프린트용 iframe 생성
+        const printFrame = document.createElement('iframe');
+        printFrame.style.position = 'fixed';
+        printFrame.style.right = '100vw';
+        printFrame.style.width = '1px';
+        printFrame.style.height = '1px';
+        printFrame.style.border = '0';
+        document.body.appendChild(printFrame);
+  
+        printFrame.onload = function() {
+          const doc = printFrame.contentWindow.document;
+          doc.open();
+          doc.write(`
+            <html>
+              <head>
+                <title>Print Area</title>
+                <style>
+                @page {
+                    size: 89mm 127mm;
+                    margin: 0;
+                }
+                 html, body { 
+                    width: 89mm;
+                    height: 127mm;
+                    margin: 0; 
+                    padding: 0;
+                    overflow: hidden;
+
+                body {
+                    width: 89mm;
+                    height: 127mm;
+                    margin: 0;
+                    padding: 0;
+                    overflow: hidden;
+                    position: relative;
+                }
+                  .print-area {
+                    width: 50mm;
+                    height: 121mm;
+                    overflow: hidden;
+                    position: relative;
+                    margin: 3mm 3.6mm 3mm 3mm; /* 상 우 하 좌 */
+                    box-sizing: border-box;
+                }
+                    .print-area img {
+                    width: 50mm;
+                    height: auto;
+                    display: block;
+                    object-fit: contain;
+                    object-position: left top;
+                    box-sizing: border-box;
+                    box-sizing: border-box;
+                }
+                </style>
+              </head>
+              <body>
+                <div class="print-area">
+                    <img src="${imgData}" onload="window.print();">
+              </body>
+            </html>
+          `);
+          doc.close();
+        };
+  
+        printFrame.contentWindow.onafterprint = function() {
+          document.body.removeChild(printFrame);
+        };
+      });
+    });
+});
+
 document.addEventListener("DOMContentLoaded", function() {
    
     const printArea = document.getElementById("printArea");
@@ -1445,19 +1547,27 @@ document.addEventListener("DOMContentLoaded", function() {
                     overflow: hidden;
                     position: relative;
                 }
-                    img {
-                    width: 50mm;
-                    max-height: 121mm;
+                  .print-area {
+                    width: 89mm;
+                    height: 127mm;
+                    overflow: hidden;
+                    position: relative;
+                    margin: 3mm 3.6mm 3mm 3mm; /* 상 우 하 좌 */
+                    box-sizing: border-box;
+                }
+                    .print-area img {
+                    width: 83mm;
                     height: auto;
-                    margin: 5mm 3.6mm 3mm 3mm; /* 상 우 하 좌 */
                     display: block;
+                    object-fit: contain;
                     object-position: left top;
                     box-sizing: border-box;
                 }
                 </style>
               </head>
               <body>
-                <img src="${imgData}" onload="window.print();">
+                <div class="print-area">
+                    <img src="${imgData}" onload="window.print();">
               </body>
             </html>
           `);
