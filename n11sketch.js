@@ -80,6 +80,7 @@ let liveBlockGrowSpeed = 0.1;
 let layerHeights = [0, 0, 0, 0, 0, 0];         // 현재 높이
 let layerTargetHeights = [445, 550, 410, 400, 386, 360]; // 목표 높이 (각 레이어별)
 let layerGrowSpeeds = [0.03, 0.05, 0.015, 0.02, 0.015, 0.025]; // 각 레이어별 속도
+let growStartTime = null;
 
 let first_time_fetch_weather_received = false;
 
@@ -100,6 +101,28 @@ function calculateLayerGrowSpeeds() {
     liveBlockGrowSpeed = layerTargetHeights[1] / GROW_TOTAL_FRAMES;
 }
 
+function startLayerGrow() {
+    growStartTime = Date.now();
+    for (let i = 0; i < layerHeights.length; i++) {
+        layerHeights[i] = 0;
+    }
+}
+
+function getCurrentLocationWeather() {
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            let lat = pos.coords.latitude;
+            let lon = pos.coords.longitude;
+            console.log(pos);
+            fetchWeather(lat, lon);
+            
+        },
+        (err) => {
+            // console.log("❌ 위치 정보를 가져오는 데 실패:", err);
+        }
+    );
+}
+
 function setup() {
     
     noCanvas(); // 메인 canvas는 안 씀
@@ -109,9 +132,8 @@ function setup() {
     createBlock(); // block 생성
     // drawPatternLines(window.layer6, 1100, 200, 0);
     initializeWindBars();
-
     calculateLayerGrowSpeeds(); // ★ 이 줄 추가
-    
+    startLayerGrow(); // ★★★ 이 줄을 반드시 추가하세요!
     
     
     // fot first value of speed
@@ -162,38 +184,51 @@ function draw() {
     //   if (liveBlockCurrentHeight > liveBlockTargetHeight) {
     //     liveBlockCurrentHeight = liveBlockTargetHeight;
     //   }
-    // 실제 DOM에 적용
-    const liveBlockDiv = document.getElementById('liveBlock');
-    if (liveBlockDiv) {
-        liveBlockDiv.style.height = layerHeights[1] + "px";
-    }
 
-    const infoBox = document.getElementById('infoBox');
-    if (infoBox) {
-        infoBox.style.height = layerHeights[1] + "px";
-        // 필요하다면 트랜지션 효과도 추가 가능:
-        // infoBox.style.transition = "height 0.3s";
-    }
+    // 실제 DOM에 적용 - frame base
+    // const liveBlockDiv = document.getElementById('liveBlock');
+    // if (liveBlockDiv) {
+    //     liveBlockDiv.style.height = layerHeights[1] + "px";
+    // }
 
-    //createGraphics들 속도
-    for (let i = 0; i < 6; i++) {
-        if (layerHeights[i] < layerTargetHeights[i]) {
-            layerHeights[i] += layerGrowSpeeds[i];
-            if (layerHeights[i] > layerTargetHeights[i]) {
-                layerHeights[i] = layerTargetHeights[i];
-            }
-            // 실제 DOM에 적용
+    // const infoBox = document.getElementById('infoBox');
+    // if (infoBox) {
+    //     infoBox.style.height = layerHeights[1] + "px";
+    //     // 필요하다면 트랜지션 효과도 추가 가능:
+    //     // infoBox.style.transition = "height 0.3s";
+    // }
+
+    // //createGraphics들 속도-frame base
+    // for (let i = 0; i < 6; i++) {
+    //     if (layerHeights[i] < layerTargetHeights[i]) {
+    //         layerHeights[i] += layerGrowSpeeds[i];
+    //         if (layerHeights[i] > layerTargetHeights[i]) {
+    //             layerHeights[i] = layerTargetHeights[i];
+    //         }
+
+    if (growStartTime !== null) {
+        let elapsed = (Date.now() - growStartTime) / 1000; // 초 단위
+        let duration = 600; // 10분
+        let t = Math.min(elapsed / duration, 1);
+        for (let i = 0; i < 6; i++) {
+            layerHeights[i] = layerTargetHeights[i] * t;
             let canvasEl = document.getElementById(`layer${i+1}-canvas`);
             if (canvasEl) {
                 canvasEl.style.height = layerHeights[i] + "px";
             }
         }
     }
-    
-    
+
+    // liveBlock, infoBox 높이 적용
+    const liveBlockDiv = document.getElementById('liveBlock');
+    if (liveBlockDiv) {
+        liveBlockDiv.style.height = layerHeights[1] + "px";
+    }
+    const infoBox = document.getElementById('infoBox');
+    if (infoBox) {
+        infoBox.style.height = layerHeights[1] + "px";
+    }
 }
-
-
 
 function pickColorGroupBySunHumidity(
     sunprogress, 
@@ -479,6 +514,8 @@ function update10minutes() {
     console.log("update10minutes() called");
     
     drawGraphicsToBlock(weatherData);
+
+    startLayerGrow(); // ★ 여기!
     
     // 1. flattenCanvas 생성 (liveBlock과 같은 크기)
     let flattenCanvas = createGraphics(1100, 550);
@@ -572,8 +609,6 @@ function update10minutes() {
     
     // 5. 새로운 날씨 데이터 받아와서 liveBlock을 새로 그림
     getCurrentLocationWeather();
-
-    update10minutes_called_counter += 1;
 }
 
 
@@ -656,25 +691,6 @@ function moveToArchive(snapshotsContainer) {
         console.warn('html2canvas 라이브러리가 로드되어 있지 않습니다. PNG export가 동작하지 않습니다.');
     }
 }
-
-
-
-function getCurrentLocationWeather() {
-    navigator.geolocation.getCurrentPosition(
-        (pos) => {
-            let lat = pos.coords.latitude;
-            let lon = pos.coords.longitude;
-            console.log(pos);
-            fetchWeather(lat, lon);
-            
-        },
-        (err) => {
-            // console.log("❌ 위치 정보를 가져오는 데 실패:", err);
-        }
-    );
-}
-
-
 
 
 function fetchWeather(lat, lon) {
@@ -849,9 +865,9 @@ function fetchWeather(lat, lon) {
         
         // console.log("drawGraphicsToBlock is here");
         
-        liveBlockCurrentHeight = 0;
-        layerHeights = [0, 0, 0, 0, 0, 0];
-        
+        // liveBlockCurrentHeight = 0;
+        // layerHeights = [0, 0, 0, 0, 0, 0];
+
         createBlock();
         drawGraphicsToBlock(weatherData);
         // console.log("drawGraphicsToBlock is here");
@@ -1411,91 +1427,6 @@ function layer6Pattern(pg) {
     }
 }
 
-
-// document.addEventListener("DOMContentLoaded", function() {
-   
-    const printArea = document.getElementById("printArea");
-    const snapshotsContainer = document.getElementById("printArea");
-    if (!printArea) return;
-  
-    mainRow.addEventListener("dblclick", function() {   
-    // 4. html2canvas로 tempDiv 캡처
-        html2canvas(mainRow, {
-          backgroundColor: null,
-          useCORS: true
-        }).then(function(canvas) {
-            const imgData = canvas.toDataURL("image/png");
-    
-        // 프린트용 iframe 생성
-        const printFrame = document.createElement('iframe');
-        printFrame.style.position = 'fixed';
-        printFrame.style.right = '100vw';
-        printFrame.style.width = '1px';
-        printFrame.style.height = '1px';
-        printFrame.style.border = '0';
-        document.body.appendChild(printFrame);
-  
-        printFrame.onload = function() {
-          const doc = printFrame.contentWindow.document;
-          doc.open();
-          doc.write(`
-            <html>
-              <head>
-                <title>Print Area</title>
-                <style>
-                @page {
-                    size: 89mm 127mm;
-                    margin: 0;
-                }
-                 html, body { 
-                    width: 89mm;
-                    height: 127mm;
-                    margin: 0; 
-                    padding: 0;
-                    overflow: hidden;
-
-                body {
-                    width: 89mm;
-                    height: 127mm;
-                    margin: 0;
-                    padding: 0;
-                    overflow: hidden;
-                    position: relative;
-                }
-                  .print-area {
-                    width: 50mm;
-                    height: 121mm;
-                    overflow: hidden;
-                    position: relative;
-                    margin: 3mm 3.6mm 3mm 3mm; /* 상 우 하 좌 */
-                    box-sizing: border-box;
-                }
-                    .print-area img {
-                    width: 50mm;
-                    height: auto;
-                    display: block;
-                    object-fit: contain;
-                    object-position: left top;
-                    box-sizing: border-box;
-                    box-sizing: border-box;
-                }
-                </style>
-              </head>
-              <body>
-                <div class="print-area">
-                    <img src="${imgData}" onload="window.print();">
-              </body>
-            </html>
-          `);
-          doc.close();
-        };
-  
-        printFrame.contentWindow.onafterprint = function() {
-          document.body.removeChild(printFrame);
-        };
-      });
-    });
-});
 
 document.addEventListener("DOMContentLoaded", function() {
    
