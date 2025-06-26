@@ -58,7 +58,7 @@ let finalColors;
 
 let densityBands = [];
 let lineCount = 60;
-let rectCount = 150;
+let rectCount = 100;
 let rectWidth = 0;
 let rectOffset = 0;
 let rectHeight;
@@ -388,7 +388,7 @@ function createBlock() {
     let canvasEl2 = window.layer2.canvas;
     canvasEl2.id = "layer2-canvas";
     canvasEl2.classList.add("layer-canvas", "layer2");
-    canvasEl2.style.height = layerHeights[0] + "px"; // 초기값 0
+    canvasEl2.style.height = layerHeights[1] + "px"; // 초기값 0
     canvasEl2.style.display = "block"; 
     canvasEl2.style.mixBlendMode = "multiply";
     canvasEl2.style.position = "absolute";
@@ -402,7 +402,7 @@ function createBlock() {
     let canvasEl3 = window.layer3.canvas;
     canvasEl3.id = "layer3-canvas";
     canvasEl3.classList.add("layer-canvas", "layer3");
-    canvasEl3.style.height = layerHeights[0] + "px"; // 초기값 0
+    canvasEl3.style.height = layerHeights[2] + "px"; // 초기값 0
     canvasEl3.style.display = "block"; 
     canvasEl3.style.mixBlendMode = "multiply";
     canvasEl3.style.position = "absolute";
@@ -415,7 +415,7 @@ function createBlock() {
     let canvasEl4 = window.layer4.canvas;
     canvasEl4.id = "layer4-canvas";
     canvasEl4.classList.add("layer-canvas", "layer4");
-    canvasEl4.style.height = layerHeights[0] + "px"; // 초기값 0
+    canvasEl4.style.height = layerHeights[3] + "px"; // 초기값 0
     canvasEl4.style.display = "block"; 
     canvasEl4.style.mixBlendMode = "multiply";
     canvasEl4.style.position = "absolute";
@@ -427,7 +427,7 @@ function createBlock() {
     let canvasEl5 = window.layer5.canvas;
     canvasEl5.id = "layer5-canvas";
     canvasEl5.classList.add("layer-canvas", "layer5");
-    canvasEl5.style.height = layerHeights[0] + "px"; // 초기값 0
+    canvasEl5.style.height = layerHeights[4] + "px"; // 초기값 0
     canvasEl5.style.display = "block"; 
     canvasEl5.style.mixBlendMode = "multiply";
     canvasEl5.style.position = "absolute";
@@ -439,7 +439,7 @@ function createBlock() {
     let canvasEl6 = window.layer6.canvas;
     canvasEl6.id = "layer6-canvas";
     canvasEl6.classList.add("layer-canvas", "layer6");
-    canvasEl6.style.height = layerHeights[0] + "px"; // 초기값 0
+    canvasEl6.style.height = layerHeights[5] + "px"; // 초기값 0
     canvasEl6.style.display = "block"; 
     canvasEl6.style.mixBlendMode = "overlay";
     canvasEl6.style.position = "absolute";
