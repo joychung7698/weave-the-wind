@@ -1261,7 +1261,7 @@ function layer4Grid1(pg) {
         for (let i = 0; i < cols; i++) {
             const MIN_TEMP = -5;
             const MAX_TEMP = 40;
-            const MIN_ELLIPSE = 5;
+            const MIN_ELLIPSE = 3;
             
             const w = colSizes1[i];
             const h = rowSizes1[j];
